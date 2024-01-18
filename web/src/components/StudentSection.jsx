@@ -6,9 +6,10 @@ import { baseURL } from "../core";
 const StudentSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toggleRefresh, setToggleRefresh] = useState(false);
+  const [img, setImg] = useState(null);
   const [allStudents, setAllStudents] = useState([]);
   const inputRef = useRef(null);
-
+  console.log(inputRef);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,24 +30,33 @@ const StudentSection = () => {
 
   const handleOk = async () => {
     setIsModalOpen(false);
+    setImg(null);
     console.log("handleok work");
     console.log(inputRef);
-    const firstName = inputRef.current[0].value;
-    const lastName = inputRef.current[1].value;
-    const course = inputRef.current[2].value;
-    const password = inputRef.current[3].value;
-    const email = inputRef.current[4].value;
-    const phoneNumber = inputRef.current[5].value;
+    let formData = new FormData();
+    const studentPic = inputRef.current[0].files[0];
+    const firstName = inputRef.current[1].value;
+    const lastName = inputRef.current[2].value;
+    const course = inputRef.current[3].value;
+    const password = inputRef.current[4].value;
+    const email = inputRef.current[5].value;
+    const phoneNumber = inputRef.current[6].value;
+    console.log(studentPic);
     console.log(firstName);
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("course", course);
+    formData.append("password", password);
+    formData.append("email", email);
+    formData.append("phoneNumber", phoneNumber);
     try {
-      const response = await axios.post(`${baseURL}api/v1/addstudent`, {
-        firstName,
-        lastName,
-        course,
-        password,
-        email,
-        phoneNumber,
-      });
+      const response = await axios.post(
+        `${baseURL}api/v1/addstudent`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       console.log(response);
       setToggleRefresh(!toggleRefresh);
     } catch (error) {
@@ -56,6 +66,7 @@ const StudentSection = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setImg(null);
   };
   return (
     <div className="p-6 w-full">
@@ -84,20 +95,22 @@ const StudentSection = () => {
           <span>Password</span>
         </div>
 
-        <div className="my-8">
+        <div className="my-8 border-black border ">
           {allStudents.map((eachStudent, index) => {
             return (
               <div
-                className="flex justify-evenly items-center text-black shadow-lg py-5"
+                className="flex justify-evenly items-center text-black shadow-lg py-5 "
                 key={index}
               >
                 <span>{index}</span>
                 <span>
                   <i className="bi bi-person text-blue-400 mr-3"></i>
                 </span>
-                <span>{eachStudent.firstName + eachStudent.lastName}</span>
-                <span>{eachStudent.course}</span>
-                <span>{eachStudent.password}</span>
+                <span className="text-center">
+                  {eachStudent.firstName + eachStudent.lastName}
+                </span>
+                <span className="text-center">{eachStudent.course}</span>
+                <span className="text-center">{eachStudent.password}</span>
               </div>
             );
           })}
@@ -110,54 +123,83 @@ const StudentSection = () => {
         onCancel={handleCancel}
       >
         <div className=" text-2xl mb-4">Add Student</div>
-        <form className="flex flex-wrap gap-3" ref={inputRef}>
-          <div>
+        <form ref={inputRef}>
+          <div className="flex justify-center">
+            <label
+              htmlFor="studentPic"
+              className="bg-black text-center rounded-full w-[60px] h-[60px] overflow-hidden flex justify-center items-center"
+            >
+              {img ? (
+                <img
+                  src={img}
+                  alt=""
+                  srcset=""
+                  className="-[60px] h-[60px] object-cover rounded-full"
+                />
+              ) : (
+                <i className="bi bi-person text-blue-400 mr-3 text-[40px]  mx-auto"></i>
+              )}
+            </label>
             <input
-              type="text"
-              placeholder="Firstname"
-              className="p-2 border-2 rounded-md text-lg"
-              required
+              type="file"
+              className="hidden"
+              id="studentPic"
+              accept="image/*"
+              onChange={(e) => {
+                const base64Url = URL.createObjectURL(e.target.files[0]);
+                setImg(base64Url);
+              }}
             />
           </div>
-          <div>
-            <input
-              type="text"
-              placeholder="Lastname"
-              className="p-2 border-2 rounded-md text-lg"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              placeholder="course"
-              className="p-2 border-2 rounded-md text-lg"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              placeholder="Password"
-              className="p-2 border-2 rounded-md text-lg"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="email"
-              placeholder="Email"
-              className="p-2 border-2 rounded-md text-lg"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="number"
-              placeholder="Phone Number"
-              className="p-2 border-2 rounded-md text-lg"
-              required
-            />
+          <div className="flex flex-wrap gap-3">
+            <div>
+              <input
+                type="text"
+                placeholder="Firstname"
+                className="p-2 border-2 rounded-md text-lg"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                placeholder="Lastname"
+                className="p-2 border-2 rounded-md text-lg"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                placeholder="course"
+                className="p-2 border-2 rounded-md text-lg"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Password"
+                className="p-2 border-2 rounded-md text-lg"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                className="p-2 border-2 rounded-md text-lg"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                placeholder="Phone Number"
+                className="p-2 border-2 rounded-md text-lg"
+                required
+              />
+            </div>
           </div>
         </form>
       </Modal>
