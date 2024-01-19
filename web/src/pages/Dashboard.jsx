@@ -27,7 +27,7 @@ const Dashboard = () => {
   };
   return (
     <div className="">
-      <div className=" flex w-full">
+      <div className=" flex w-full max-h-screen overflow-hidden">
         <div className=" flex flex-col justify-between w-80 border p-6 min-h-screen shadow-2xl">
           <div className="flex flex-col gap-2 justify-between">
             <div className=" text-blue-400 text-4xl text-center mb-8">

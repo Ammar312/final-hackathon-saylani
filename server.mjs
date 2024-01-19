@@ -11,6 +11,7 @@ import unAuthRouter from "./unAuthRoutes/unAuth.mjs";
 const app = express();
 const __dirname = path.resolve();
 const PORT = process.env.PORT || 3000;
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(
   cors({
@@ -23,10 +24,10 @@ app.use(cookieParser());
 app.use("/api/v1", authRouter);
 app.use("/api/v1", (req, res, next) => {
   const token = req.cookies.token;
-  console.log("token", token);
+  // console.log("token", token);
   try {
     const decoded = Jwt.verify(token, process.env.SECRET);
-    console.log("decoded", decoded);
+    // console.log("decoded", decoded);
     req.body.decoded = {
       firstName: decoded.firstName,
       lastName: decoded.lastName,

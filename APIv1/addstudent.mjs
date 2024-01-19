@@ -1,11 +1,19 @@
 import express from "express";
 import { client } from "../mongodb.mjs";
+import upload from "../middlewares/multermiddleware.mjs";
+import uploadCloudinary from "../utilis/cloudinary.mjs";
 const router = express.Router();
 const db = client.db("finalhackathon");
 const dbCollection = db.collection("students");
 
-router.post("/addstudent", async (req, res) => {
+router.post("/addstudent", upload, async (req, res) => {
+  const body = req.body;
+  const file = req.file;
+
+  console.log("filepath2", req.file.path);
   if (
+    // !req.body.studentPic ||
+    !file ||
     !req.body.email ||
     !req.body.firstName ||
     !req.body.lastName ||
@@ -44,7 +52,7 @@ router.post("/addstudent", async (req, res) => {
 router.get("/allstudent", async (req, res) => {
   const allStudents = dbCollection.find({});
   const allStudentsIntoArray = await allStudents.toArray();
-  console.log("allStudentsintoarray :", allStudentsIntoArray);
+  // console.log("allStudentsintoarray :", allStudentsIntoArray);
 
   res.send(allStudentsIntoArray);
 });

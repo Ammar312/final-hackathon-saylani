@@ -8,8 +8,13 @@ const StudentSection = () => {
   const [toggleRefresh, setToggleRefresh] = useState(false);
   const [img, setImg] = useState(null);
   const [allStudents, setAllStudents] = useState([]);
-  const inputRef = useRef(null);
-  console.log(inputRef);
+  const picRef = useRef(null);
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const courseRef = useRef(null);
+  const passwordRef = useRef(null);
+  const emailRef = useRef(null);
+  const phoneNumberRef = useRef(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,33 +36,43 @@ const StudentSection = () => {
   const handleOk = async () => {
     setIsModalOpen(false);
     setImg(null);
-    console.log("handleok work");
-    console.log(inputRef);
-    let formData = new FormData();
-    const studentPic = inputRef.current[0].files[0];
-    const firstName = inputRef.current[1].value;
-    const lastName = inputRef.current[2].value;
-    const course = inputRef.current[3].value;
-    const password = inputRef.current[4].value;
-    const email = inputRef.current[5].value;
-    const phoneNumber = inputRef.current[6].value;
-    console.log(studentPic);
-    console.log(firstName);
-    formData.append("firstName", firstName);
-    formData.append("lastName", lastName);
-    formData.append("course", course);
-    formData.append("password", password);
-    formData.append("email", email);
-    formData.append("phoneNumber", phoneNumber);
+
+    // const studentPic = inputRef.current[0].files[0];
+    // const firstName = inputRef.current[1].value;
+    // const lastName = inputRef.current[2].value;
+    // const course = inputRef.current[3].value;
+    // const password = inputRef.current[4].value;
+    // const email = inputRef.current[5].value;
+    // const phoneNumber = inputRef.current[6].value;
+    // console.log(studentPic);
+    // console.log(firstName);
+    // formData.append("firstName", firstName);
+    // formData.append("lastName", lastName);
+    // formData.append("course", course);
+    // formData.append("password", password);
+    // formData.append("email", email);
+    // formData.append("phoneNumber", phoneNumber);
+    const formData = new FormData();
+    formData.append("studentPic", picRef.current.files[0]);
+    formData.append("firstName", firstNameRef.current.value);
+    formData.append("lastName", lastNameRef.current.value);
+    formData.append("course", courseRef.current.value);
+    formData.append("password", passwordRef.current.value);
+    formData.append("email", emailRef.current.value);
+    formData.append("phoneNumber", phoneNumberRef.current.value);
+    console.log("picRef", picRef.current.files[0]);
+    console.log("formdata", formData);
     try {
       const response = await axios.post(
         `${baseURL}api/v1/addstudent`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
         }
       );
       console.log(response);
+      console.log(formData);
       setToggleRefresh(!toggleRefresh);
     } catch (error) {
       console.log(error);
@@ -95,7 +110,7 @@ const StudentSection = () => {
           <span>Password</span>
         </div>
 
-        <div className="my-8 border-black border ">
+        <div className="my-8 border-black border h-full overflow-y-auto ">
           {allStudents.map((eachStudent, index) => {
             return (
               <div
@@ -123,7 +138,7 @@ const StudentSection = () => {
         onCancel={handleCancel}
       >
         <div className=" text-2xl mb-4">Add Student</div>
-        <form ref={inputRef}>
+        <form encType="multipart/form-data">
           <div className="flex justify-center">
             <label
               htmlFor="studentPic"
@@ -133,7 +148,6 @@ const StudentSection = () => {
                 <img
                   src={img}
                   alt=""
-                  srcset=""
                   className="-[60px] h-[60px] object-cover rounded-full"
                 />
               ) : (
@@ -144,6 +158,7 @@ const StudentSection = () => {
               type="file"
               className="hidden"
               id="studentPic"
+              ref={picRef}
               accept="image/*"
               onChange={(e) => {
                 const base64Url = URL.createObjectURL(e.target.files[0]);
@@ -157,6 +172,7 @@ const StudentSection = () => {
                 type="text"
                 placeholder="Firstname"
                 className="p-2 border-2 rounded-md text-lg"
+                ref={firstNameRef}
                 required
               />
             </div>
@@ -165,6 +181,7 @@ const StudentSection = () => {
                 type="text"
                 placeholder="Lastname"
                 className="p-2 border-2 rounded-md text-lg"
+                ref={lastNameRef}
                 required
               />
             </div>
@@ -173,6 +190,7 @@ const StudentSection = () => {
                 type="text"
                 placeholder="course"
                 className="p-2 border-2 rounded-md text-lg"
+                ref={courseRef}
                 required
               />
             </div>
@@ -181,6 +199,7 @@ const StudentSection = () => {
                 type="password"
                 placeholder="Password"
                 className="p-2 border-2 rounded-md text-lg"
+                ref={passwordRef}
                 required
               />
             </div>
@@ -189,6 +208,7 @@ const StudentSection = () => {
                 type="email"
                 placeholder="Email"
                 className="p-2 border-2 rounded-md text-lg"
+                ref={emailRef}
                 required
               />
             </div>
@@ -197,6 +217,7 @@ const StudentSection = () => {
                 type="number"
                 placeholder="Phone Number"
                 className="p-2 border-2 rounded-md text-lg"
+                ref={phoneNumberRef}
                 required
               />
             </div>
