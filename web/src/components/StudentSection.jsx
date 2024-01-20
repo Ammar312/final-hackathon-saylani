@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Button, Modal } from "antd";
+import { Button, Modal, Dropdown, Space } from "antd";
 import axios from "axios";
 import { baseURL } from "../core";
 
@@ -37,21 +37,6 @@ const StudentSection = () => {
     setIsModalOpen(false);
     setImg(null);
 
-    // const studentPic = inputRef.current[0].files[0];
-    // const firstName = inputRef.current[1].value;
-    // const lastName = inputRef.current[2].value;
-    // const course = inputRef.current[3].value;
-    // const password = inputRef.current[4].value;
-    // const email = inputRef.current[5].value;
-    // const phoneNumber = inputRef.current[6].value;
-    // console.log(studentPic);
-    // console.log(firstName);
-    // formData.append("firstName", firstName);
-    // formData.append("lastName", lastName);
-    // formData.append("course", course);
-    // formData.append("password", password);
-    // formData.append("email", email);
-    // formData.append("phoneNumber", phoneNumber);
     const formData = new FormData();
     formData.append("studentPic", picRef.current.files[0]);
     formData.append("firstName", firstNameRef.current.value);
@@ -83,6 +68,23 @@ const StudentSection = () => {
     setIsModalOpen(false);
     setImg(null);
   };
+  const items = [
+    {
+      label: <a href="https://www.antgroup.com">1st menu item</a>,
+      key: "0",
+    },
+    {
+      label: <a href="https://www.aliyun.com">2nd menu item</a>,
+      key: "1",
+    },
+    {
+      type: "divider",
+    },
+    {
+      label: "3rd menu item",
+      key: "3",
+    },
+  ];
   return (
     <div className="p-6 w-full">
       <header className="flex justify-between w-[980px] h-full p-2 items-center shadow-md ">
@@ -110,22 +112,30 @@ const StudentSection = () => {
           <span>Password</span>
         </div>
 
-        <div className="my-8 border-black border h-full overflow-y-auto ">
+        <div className="my-8 border-black border max-h-[400px] overflow-y-auto ">
           {allStudents.map((eachStudent, index) => {
             return (
               <div
-                className="flex justify-evenly items-center text-black shadow-lg py-5 "
+                className="flex justify-evenly items-center text-black shadow-lg py-5"
                 key={index}
               >
                 <span>{index}</span>
                 <span>
-                  <i className="bi bi-person text-blue-400 mr-3"></i>
+                  {/* <i className="bi bi-person text-blue-400 mr-3"></i> */}
+                  <img
+                    src={eachStudent.imgUrl || ""}
+                    alt=""
+                    className="w-[50px]"
+                  />
                 </span>
                 <span className="text-center">
                   {eachStudent.firstName + eachStudent.lastName}
                 </span>
                 <span className="text-center">{eachStudent.course}</span>
                 <span className="text-center">{eachStudent.password}</span>
+                <Dropdown menu={{ items }} trigger={["click"]}>
+                  <i className="bi bi-three-dots-vertical" />
+                </Dropdown>
               </div>
             );
           })}
@@ -148,7 +158,7 @@ const StudentSection = () => {
                 <img
                   src={img}
                   alt=""
-                  className="-[60px] h-[60px] object-cover rounded-full"
+                  className="w-[60px] h-[60px] object-cover rounded-full"
                 />
               ) : (
                 <i className="bi bi-person text-blue-400 mr-3 text-[40px]  mx-auto"></i>

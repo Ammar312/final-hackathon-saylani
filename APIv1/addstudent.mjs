@@ -22,13 +22,23 @@ router.post("/addstudent", upload, async (req, res) => {
     res.status(403).send({ message: "Required Paramater Missing" });
     return;
   }
+  if (file.size > 2000000) {
+    // size bytes, limit of 2MB
+    res.status(403).send({ message: "File size limit exceed, max limit 2MB" });
+    return;
+  }
+
   const emailInLower = req.body.email.toLowerCase();
   try {
     const isInclude = await dbCollection.findOne({
       email: emailInLower,
     });
     if (!isInclude) {
+      const imgUrl = await uploadCloudinary(file.path);
+      console.log("imgUrl", imgUrl);
+
       const addStudent = await dbCollection.insertOne({
+        imgUrl: imgUrl.secure_url,
         isAdmin: false,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
