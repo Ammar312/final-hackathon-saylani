@@ -2,6 +2,7 @@ import express from "express";
 import { client } from "../mongodb.mjs";
 import upload from "../middlewares/multermiddleware.mjs";
 import uploadCloudinary from "../utilis/cloudinary.mjs";
+import { ObjectId } from "mongodb";
 const router = express.Router();
 const db = client.db("finalhackathon");
 const dbCollection = db.collection("students");
@@ -65,6 +66,20 @@ router.get("/allstudent", async (req, res) => {
   // console.log("allStudentsintoarray :", allStudentsIntoArray);
 
   res.send(allStudentsIntoArray);
+});
+
+router.delete("/deletestudent/:studentid", async (req, res) => {
+  const id = req.params.studentid;
+  if (!ObjectId.isValid(id)) {
+    res.status(403).send(`Invalid student id`);
+    return;
+  }
+  try {
+    await dbCollection.deleteOne({ _id: new ObjectId(id) });
+    res.send({ message: "Deleted Successfully" });
+  } catch (error) {
+    res.status(404).send("Not Found");
+  }
 });
 
 export default router;

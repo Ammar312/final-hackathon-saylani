@@ -61,3 +61,84 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+// const items = [
+//   {
+//     label: (
+//       <Popconfirm
+//         title="Delete the task"
+//         description="Are you sure to delete this task?"
+//         onConfirm={(e) => deleteStudent()}
+//         // onCancel={cancel}
+//         okText="Yes"
+//         cancelText="No"
+//       >
+//         Delete
+//       </Popconfirm>
+//     ),
+//     // key: "0",
+//   },
+// ];
+
+{
+  /* <div className="m-4">
+<div className="flex justify-evenly bg-blue-400 text-white py-5">
+ <span>id</span>
+ <span>Profile</span>
+ <span>Name</span>
+ <span>Course Name</span>
+ <span>Password</span>
+</div> 
+
+<div className="my-8 border-black border max-h-[400px] overflow-y-auto ">
+ {allStudents.map((eachStudent, index) => {
+   return (
+     <div
+       className="flex justify-evenly items-center text-black shadow-lg py-5"
+       key={index}
+     >
+       <span>{index}</span>
+       <span>
+          <i className="bi bi-person text-blue-400 mr-3"></i> 
+         <img
+           src={eachStudent.imgUrl || ""}
+           alt=""
+           className="w-[50px]"
+         />
+       </span>
+       <span className="text-center">
+         {eachStudent.firstName + eachStudent.lastName}
+       </span>
+       <span className="text-center">{eachStudent.course}</span>
+       <span className="text-center">{eachStudent.password}</span>
+       <Dropdown
+         menu={
+           <>
+             <Popconfirm
+               title="Delete the task"
+               description="Are you sure to delete this task?"
+               onConfirm={(e) => deleteStudent(eachStudent._id)}
+               // onCancel={cancel}
+               okText="Yes"
+               cancelText="No"
+             >
+               Delete
+             </Popconfirm>
+             <div>
+               <span>Edit</span>
+             </div>
+           </>
+         }
+         trigger={["click"]}
+       >
+         <i
+           className="bi bi-three-dots-vertical"
+           id={eachStudent._id}
+         />
+       </Dropdown>
+     </div>
+   );
+ })}
+</div> 
+</div> */
+}

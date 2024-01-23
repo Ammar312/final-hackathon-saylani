@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Button, Modal, Dropdown, Space } from "antd";
+import { Button, Modal, Dropdown, Space, Popconfirm, Table } from "antd";
+const { Column, ColumnGroup } = Table;
 import axios from "axios";
 import { baseURL } from "../core";
 
@@ -68,23 +69,15 @@ const StudentSection = () => {
     setIsModalOpen(false);
     setImg(null);
   };
-  const items = [
-    {
-      label: <a href="https://www.antgroup.com">1st menu item</a>,
-      key: "0",
-    },
-    {
-      label: <a href="https://www.aliyun.com">2nd menu item</a>,
-      key: "1",
-    },
-    {
-      type: "divider",
-    },
-    {
-      label: "3rd menu item",
-      key: "3",
-    },
-  ];
+
+  const deleteStudent = async (id) => {
+    try {
+      const response = await axios.delete(`${baseURL}api/v1/addstudent/${id}`);
+      setToggleRefresh(!toggleRefresh);
+      console.log(response);
+    } catch (error) {}
+  };
+
   return (
     <div className="p-6 w-full">
       <header className="flex justify-between w-[980px] h-full p-2 items-center shadow-md ">
@@ -103,44 +96,42 @@ const StudentSection = () => {
           </button>
         </div>
       </header>
-      <div className="m-4">
-        <div className="flex justify-evenly bg-blue-400 text-white py-5">
-          <span>id</span>
-          <span>Profile</span>
-          <span>Name</span>
-          <span>Course Name</span>
-          <span>Password</span>
-        </div>
 
-        <div className="my-8 border-black border max-h-[400px] overflow-y-auto ">
-          {allStudents.map((eachStudent, index) => {
-            return (
-              <div
-                className="flex justify-evenly items-center text-black shadow-lg py-5"
-                key={index}
-              >
-                <span>{index}</span>
-                <span>
-                  {/* <i className="bi bi-person text-blue-400 mr-3"></i> */}
-                  <img
-                    src={eachStudent.imgUrl || ""}
-                    alt=""
-                    className="w-[50px]"
-                  />
-                </span>
-                <span className="text-center">
-                  {eachStudent.firstName + eachStudent.lastName}
-                </span>
-                <span className="text-center">{eachStudent.course}</span>
-                <span className="text-center">{eachStudent.password}</span>
-                <Dropdown menu={{ items }} trigger={["click"]}>
-                  <i className="bi bi-three-dots-vertical" />
-                </Dropdown>
-              </div>
-            );
-          })}
-        </div>
+      <div className="m-4">
+        <Table
+          dataSource={allStudents}
+          pagination={{
+            defaultPageSize: 5,
+            pageSize: 6,
+            responsive: true,
+          }}
+        >
+          <Column title="First Name" dataIndex="firstName" key="firstName" />
+          <Column title="Last Name" dataIndex="lastName" key="lastName" />
+
+          <Column
+            title="Profile"
+            dataIndex="imgUrl"
+            key="imgUrl"
+            render={(text, record) => (
+              <img
+                src={record.imgUrl || ""}
+                alt="imgUrl"
+                className="w-[50px]"
+              />
+            )}
+          />
+          <Column title="Course" dataIndex="course" key="course" />
+          <Column title="Password" dataIndex="password" key="password" />
+          <Column
+            key="action"
+            render={(text, record) => (
+              <i className="bi bi-three-dots-vertical" id={record._id} />
+            )}
+          />
+        </Table>
       </div>
+
       <Modal
         title="Basic Modal"
         open={isModalOpen}
