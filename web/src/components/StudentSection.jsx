@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Button, Modal, Dropdown, Space, Popconfirm, Table } from "antd";
-const { Column, ColumnGroup } = Table;
+import { Modal, Dropdown, Popconfirm, Table, message } from "antd";
+const { Column } = Table;
 import axios from "axios";
 import { baseURL } from "../core";
 
@@ -9,6 +9,7 @@ const StudentSection = () => {
   const [toggleRefresh, setToggleRefresh] = useState(false);
   const [img, setImg] = useState(null);
   const [allStudents, setAllStudents] = useState([]);
+  const [open, setOpen] = useState(false);
   const picRef = useRef(null);
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
@@ -72,10 +73,21 @@ const StudentSection = () => {
 
   const deleteStudent = async (id) => {
     try {
-      const response = await axios.delete(`${baseURL}api/v1/addstudent/${id}`);
+      const response = await axios.delete(
+        `${baseURL}api/v1/deletestudent/${id}`
+      );
       setToggleRefresh(!toggleRefresh);
       console.log(response);
-    } catch (error) {}
+      setOpen(false);
+    } catch (error) {
+      // message.danger(`${error.message}`);
+    }
+  };
+  const handleOpenChange = (nextOpen) => {
+    console.log("nextopen", nextOpen);
+    if (nextOpen) {
+      setOpen(true);
+    }
   };
 
   return (
@@ -126,7 +138,34 @@ const StudentSection = () => {
           <Column
             key="action"
             render={(text, record) => (
-              <i className="bi bi-three-dots-vertical" id={record._id} />
+              <Dropdown
+                // open={open}
+                // onOpenChange={handleOpenChange}
+                trigger={["click"]}
+                dropdownRender={() => (
+                  <div className=" p-[6px] flex flex-col gap-2 bg-white rounded-lg shadow-xl cursor-pointer text-base">
+                    <Popconfirm
+                      title="Delete the task"
+                      className="text-red-400 hover:bg-gray-100 px-3 py-1 flex-grow"
+                      description="Are you sure to delete this task?"
+                      onConfirm={() => deleteStudent(record._id)}
+                      // onCancel={cancel}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      Delete
+                    </Popconfirm>
+                    <div
+                      className="text-green-400 hover:bg-gray-100 px-3 py-1 flex-grow"
+                      onClick={showModal}
+                    >
+                      Edit
+                    </div>
+                  </div>
+                )}
+              >
+                <i className="bi bi-three-dots-vertical" />
+              </Dropdown>
             )}
           />
         </Table>

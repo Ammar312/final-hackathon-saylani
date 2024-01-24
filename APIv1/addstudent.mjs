@@ -1,17 +1,14 @@
 import express from "express";
 import { client } from "../mongodb.mjs";
 import upload from "../middlewares/multermiddleware.mjs";
-import uploadCloudinary from "../utilis/cloudinary.mjs";
+import { uploadCloudinary, deleteImg } from "../utilis/cloudinary.mjs";
 import { ObjectId } from "mongodb";
 const router = express.Router();
 const db = client.db("finalhackathon");
 const dbCollection = db.collection("students");
 
 router.post("/addstudent", upload, async (req, res) => {
-  const body = req.body;
   const file = req.file;
-
-  console.log("filepath2", req.file.path);
   if (
     // !req.body.studentPic ||
     !file ||
@@ -35,11 +32,12 @@ router.post("/addstudent", upload, async (req, res) => {
       email: emailInLower,
     });
     if (!isInclude) {
-      const imgUrl = await uploadCloudinary(file.path);
-      console.log("imgUrl", imgUrl);
+      const img = await uploadCloudinary(file.path);
 
       const addStudent = await dbCollection.insertOne({
-        imgUrl: imgUrl.secure_url,
+        publicId: img.public_id,
+        assetId: img.asset_id,
+        imgUrl: img.secure_url,
         isAdmin: false,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -62,6 +60,7 @@ router.post("/addstudent", upload, async (req, res) => {
 });
 router.get("/allstudent", async (req, res) => {
   const allStudents = dbCollection.find({});
+  console.log(typeof allStudents);
   const allStudentsIntoArray = await allStudents.toArray();
   // console.log("allStudentsintoarray :", allStudentsIntoArray);
 
@@ -75,10 +74,54 @@ router.delete("/deletestudent/:studentid", async (req, res) => {
     return;
   }
   try {
+    const doc = await dbCollection.findOne({ _id: new ObjectId(id) });
+    const deletepublicId = doc.publicId;
+    console.log("doc", doc);
     await dbCollection.deleteOne({ _id: new ObjectId(id) });
+    await deleteImg(deletepublicId);
     res.send({ message: "Deleted Successfully" });
   } catch (error) {
     res.status(404).send("Not Found");
+  }
+});
+router.put("/editstudent/:studentid", async (req, res) => {
+  const id = req.params.studentid;
+  if (!ObjectId.isValid(id)) {
+    res.status(403).send(`Invalid student id`);
+    return;
+  }
+
+  let updatedData = {};
+  if (req.body.firstName) {
+    updatedData.firstName = req.body.firstName;
+  }
+  if (req.body.lastName) {
+    updatedData.lastName = req.body.lastName;
+  }
+  if (req.body.course) {
+    updatedData.course = req.body.course;
+  }
+  if (req.body.password) {
+    updatedData.password = req.body.password;
+  }
+  if (req.body.email) {
+    updatedData.email = req.body.email;
+  }
+  if (req.body.phoneNumber) {
+    updatedData.phoneNumber = req.body.phoneNumber;
+  }
+  try {
+    const updatedResponse = await dbCollection.updateOne(
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $set: updatedData,
+      }
+    );
+    res.send("Post Updated Successfully");
+  } catch (error) {
+    res.status(500).send("server error, please try later");
   }
 });
 
