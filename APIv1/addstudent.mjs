@@ -5,7 +5,7 @@ import { uploadCloudinary, deleteImg } from "../utilis/cloudinary.mjs";
 import { ObjectId } from "mongodb";
 const router = express.Router();
 const db = client.db("finalhackathon");
-const dbCollection = db.collection("students");
+const dbCollection = db.collection("users");
 
 router.post("/addstudent", upload, async (req, res) => {
   const file = req.file;

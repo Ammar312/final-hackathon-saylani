@@ -6,6 +6,7 @@ import { baseURL } from "../core";
 
 const StudentSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(false);
   const [toggleRefresh, setToggleRefresh] = useState(false);
   const [img, setImg] = useState(null);
   const [allStudents, setAllStudents] = useState([]);
@@ -83,6 +84,8 @@ const StudentSection = () => {
       // message.danger(`${error.message}`);
     }
   };
+
+  const handleEdit = () => {};
   const handleOpenChange = (nextOpen) => {
     console.log("nextopen", nextOpen);
     if (nextOpen) {
@@ -137,36 +140,42 @@ const StudentSection = () => {
           <Column title="Password" dataIndex="password" key="password" />
           <Column
             key="action"
-            render={(text, record) => (
-              <Dropdown
-                // open={open}
-                // onOpenChange={handleOpenChange}
-                trigger={["click"]}
-                dropdownRender={() => (
-                  <div className=" p-[6px] flex flex-col gap-2 bg-white rounded-lg shadow-xl cursor-pointer text-base">
-                    <Popconfirm
-                      title="Delete the task"
-                      className="text-red-400 hover:bg-gray-100 px-3 py-1 flex-grow"
-                      description="Are you sure to delete this task?"
-                      onConfirm={() => deleteStudent(record._id)}
-                      // onCancel={cancel}
-                      okText="Yes"
-                      cancelText="No"
+            render={(text, record) => {
+              return (
+                <>
+                  {!record.isAdmin && (
+                    <Dropdown
+                      // open={open}
+                      // onOpenChange={handleOpenChange}
+                      trigger={["click"]}
+                      dropdownRender={() => (
+                        <div className=" p-[6px] flex flex-col gap-2 bg-white rounded-lg shadow-xl cursor-pointer text-base">
+                          <Popconfirm
+                            title="Delete the task"
+                            className="text-red-400 hover:bg-gray-100 px-3 py-1 flex-grow"
+                            description="Are you sure to delete this task?"
+                            onConfirm={() => deleteStudent(record._id)}
+                            // onCancel={cancel}
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            Delete
+                          </Popconfirm>
+                          <div
+                            className="text-green-400 hover:bg-gray-100 px-3 py-1 flex-grow cursor-pointer"
+                            onClick={() => setIsEditModal(true)}
+                          >
+                            Edit
+                          </div>
+                        </div>
+                      )}
                     >
-                      Delete
-                    </Popconfirm>
-                    <div
-                      className="text-green-400 hover:bg-gray-100 px-3 py-1 flex-grow"
-                      onClick={showModal}
-                    >
-                      Edit
-                    </div>
-                  </div>
-                )}
-              >
-                <i className="bi bi-three-dots-vertical" />
-              </Dropdown>
-            )}
+                      <i className="bi bi-three-dots-vertical" />
+                    </Dropdown>
+                  )}
+                </>
+              );
+            }}
           />
         </Table>
       </div>
@@ -206,6 +215,72 @@ const StudentSection = () => {
               }}
             />
           </div>
+          <div className="flex flex-wrap gap-3">
+            <div>
+              <input
+                type="text"
+                placeholder="Firstname"
+                className="p-2 border-2 rounded-md text-lg"
+                ref={firstNameRef}
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                placeholder="Lastname"
+                className="p-2 border-2 rounded-md text-lg"
+                ref={lastNameRef}
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                placeholder="course"
+                className="p-2 border-2 rounded-md text-lg"
+                ref={courseRef}
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Password"
+                className="p-2 border-2 rounded-md text-lg"
+                ref={passwordRef}
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                className="p-2 border-2 rounded-md text-lg"
+                ref={emailRef}
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                placeholder="Phone Number"
+                className="p-2 border-2 rounded-md text-lg"
+                ref={phoneNumberRef}
+                required
+              />
+            </div>
+          </div>
+        </form>
+      </Modal>
+      <Modal
+        title=""
+        open={isEditModal}
+        onOk={handleEdit}
+        onCancel={() => setIsEditModal(false)}
+      >
+        <div className=" text-2xl mb-4">Edit Student</div>
+        <form encType="multipart/form-data">
           <div className="flex flex-wrap gap-3">
             <div>
               <input
