@@ -2,6 +2,7 @@ import express from "express";
 import { client } from "../mongodb.mjs";
 import upload from "../middlewares/multermiddleware.mjs";
 import { uploadCloudinary, deleteImg } from "../utilis/cloudinary.mjs";
+import { stringToHash } from "bcrypt-inzi";
 import { ObjectId } from "mongodb";
 const router = express.Router();
 const db = client.db("finalhackathon");
@@ -33,7 +34,7 @@ router.post("/addstudent", upload, async (req, res) => {
     });
     if (!isInclude) {
       const img = await uploadCloudinary(file.path);
-
+      const passwordHash = await stringToHash(req.body.password);
       const addStudent = await dbCollection.insertOne({
         publicId: img.public_id,
         assetId: img.asset_id,
@@ -42,7 +43,8 @@ router.post("/addstudent", upload, async (req, res) => {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         course: req.body.course,
-        password: req.body.password,
+        showPassword: req.body.password,
+        password: passwordHash,
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
         createdOn: new Date(),
@@ -60,7 +62,6 @@ router.post("/addstudent", upload, async (req, res) => {
 });
 router.get("/allstudent", async (req, res) => {
   const allStudents = dbCollection.find({});
-  console.log(typeof allStudents);
   const allStudentsIntoArray = await allStudents.toArray();
   // console.log("allStudentsintoarray :", allStudentsIntoArray);
 

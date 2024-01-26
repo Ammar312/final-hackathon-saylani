@@ -137,7 +137,11 @@ const StudentSection = () => {
             )}
           />
           <Column title="Course" dataIndex="course" key="course" />
-          <Column title="Password" dataIndex="password" key="password" />
+          <Column
+            title="Password"
+            dataIndex="showPassword"
+            key="showPassword"
+          />
           <Column
             key="action"
             render={(text, record) => {
@@ -162,7 +166,7 @@ const StudentSection = () => {
                             Delete
                           </Popconfirm>
                           <div
-                            className="text-green-400 hover:bg-gray-100 px-3 py-1 flex-grow cursor-pointer"
+                            className="text-green-400 hover:bg-gray-100 px-3 py-1 flex-grow "
                             onClick={() => setIsEditModal(true)}
                           >
                             Edit
@@ -170,7 +174,7 @@ const StudentSection = () => {
                         </div>
                       )}
                     >
-                      <i className="bi bi-three-dots-vertical" />
+                      <i className="bi bi-three-dots-vertical cursor-pointer" />
                     </Dropdown>
                   )}
                 </>
