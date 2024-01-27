@@ -102,8 +102,9 @@ router.put("/editstudent/:studentid", async (req, res) => {
   if (req.body.course) {
     updatedData.course = req.body.course;
   }
-  if (req.body.password) {
-    updatedData.password = req.body.password;
+  if (req.body.showPassword) {
+    updatedData.password = req.body.showPassword;
+    updatedData.showPassword = req.body.showPassword;
   }
   if (req.body.email) {
     updatedData.email = req.body.email;

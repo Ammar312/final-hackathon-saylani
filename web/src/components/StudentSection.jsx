@@ -7,10 +7,10 @@ import { baseURL } from "../core";
 const StudentSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModal, setIsEditModal] = useState(false);
+  const [selectedStudentData, setSelectedStudentData] = useState(null);
   const [toggleRefresh, setToggleRefresh] = useState(false);
   const [img, setImg] = useState(null);
   const [allStudents, setAllStudents] = useState([]);
-  const [open, setOpen] = useState(false);
   const picRef = useRef(null);
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
@@ -18,6 +18,7 @@ const StudentSection = () => {
   const passwordRef = useRef(null);
   const emailRef = useRef(null);
   const phoneNumberRef = useRef(null);
+  const editFormRef = useRef();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,6 +32,10 @@ const StudentSection = () => {
     };
     fetchData();
   }, [toggleRefresh]);
+
+  useEffect(() => {
+    console.log("Student state changed", selectedStudentData);
+  }, [selectedStudentData]);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -59,9 +64,13 @@ const StudentSection = () => {
           withCredentials: true,
         }
       );
-      console.log(response);
-      console.log(formData);
       setToggleRefresh(!toggleRefresh);
+      firstNameRef.current.value = "";
+      lastNameRef.current.value = "";
+      courseRef.current.value = "";
+      passwordRef.current.value = "";
+      emailRef.current.value = "";
+      phoneNumberRef.current.value = "";
     } catch (error) {
       console.log(error);
     }
@@ -70,6 +79,12 @@ const StudentSection = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
     setImg(null);
+    firstNameRef.current.value = "";
+    lastNameRef.current.value = "";
+    courseRef.current.value = "";
+    passwordRef.current.value = "";
+    emailRef.current.value = "";
+    phoneNumberRef.current.value = "";
   };
 
   const deleteStudent = async (id) => {
@@ -84,13 +99,40 @@ const StudentSection = () => {
       // message.danger(`${error.message}`);
     }
   };
+  const handleEditModal = (record) => {
+    // setSelectedStudentData((prevRecord) => ({ ...prevRecord, ...record }));
+    setSelectedStudentData(record);
+    setIsEditModal(true);
+  };
 
-  const handleEdit = () => {};
-  const handleOpenChange = (nextOpen) => {
-    console.log("nextopen", nextOpen);
-    if (nextOpen) {
-      setOpen(true);
+  const handleEdit = async (id) => {
+    const firstName = editFormRef.current[0].value;
+    const lastName = editFormRef.current[1].value;
+    const course = editFormRef.current[2].value;
+    const showPassword = editFormRef.current[3].value;
+    const email = editFormRef.current[4].value;
+    const phoneNumber = editFormRef.current[5].value;
+    try {
+      const response = await axios.put(`${baseURL}api/v1/editstudent/${id}`, {
+        firstName,
+        lastName,
+        course,
+        email,
+        showPassword,
+        phoneNumber,
+      });
+      setToggleRefresh(!toggleRefresh);
+      setIsEditModal(false);
+      setSelectedStudentData(null);
+      editFormRef.current.reset();
+    } catch (error) {
+      console.log(error);
     }
+  };
+  const handleEditCancel = () => {
+    setIsEditModal(false);
+    setSelectedStudentData(null);
+    editFormRef.current.reset();
   };
 
   return (
@@ -167,7 +209,7 @@ const StudentSection = () => {
                           </Popconfirm>
                           <div
                             className="text-green-400 hover:bg-gray-100 px-3 py-1 flex-grow "
-                            onClick={() => setIsEditModal(true)}
+                            onClick={() => handleEditModal(record)}
                           >
                             Edit
                           </div>
@@ -280,18 +322,19 @@ const StudentSection = () => {
       <Modal
         title=""
         open={isEditModal}
-        onOk={handleEdit}
-        onCancel={() => setIsEditModal(false)}
+        onOk={() => handleEdit(selectedStudentData._id)}
+        onCancel={handleEditCancel}
       >
         <div className=" text-2xl mb-4">Edit Student</div>
-        <form encType="multipart/form-data">
+        <form encType="multipart/form-data" ref={editFormRef}>
           <div className="flex flex-wrap gap-3">
             <div>
               <input
                 type="text"
                 placeholder="Firstname"
                 className="p-2 border-2 rounded-md text-lg"
-                ref={firstNameRef}
+                // ref={firstNameRef}
+                defaultValue={selectedStudentData?.firstName}
                 required
               />
             </div>
@@ -300,7 +343,8 @@ const StudentSection = () => {
                 type="text"
                 placeholder="Lastname"
                 className="p-2 border-2 rounded-md text-lg"
-                ref={lastNameRef}
+                // ref={lastNameRef}
+                defaultValue={selectedStudentData?.lastName}
                 required
               />
             </div>
@@ -309,7 +353,8 @@ const StudentSection = () => {
                 type="text"
                 placeholder="course"
                 className="p-2 border-2 rounded-md text-lg"
-                ref={courseRef}
+                // ref={courseRef}
+                defaultValue={selectedStudentData?.course}
                 required
               />
             </div>
@@ -318,7 +363,8 @@ const StudentSection = () => {
                 type="password"
                 placeholder="Password"
                 className="p-2 border-2 rounded-md text-lg"
-                ref={passwordRef}
+                // ref={passwordRef}
+                defaultValue={selectedStudentData?.showPassword}
                 required
               />
             </div>
@@ -327,7 +373,8 @@ const StudentSection = () => {
                 type="email"
                 placeholder="Email"
                 className="p-2 border-2 rounded-md text-lg"
-                ref={emailRef}
+                // ref={emailRef}
+                defaultValue={selectedStudentData?.email}
                 required
               />
             </div>
@@ -336,7 +383,8 @@ const StudentSection = () => {
                 type="number"
                 placeholder="Phone Number"
                 className="p-2 border-2 rounded-md text-lg"
-                ref={phoneNumberRef}
+                // ref={phoneNumberRef}
+                defaultValue={selectedStudentData?.phoneNumber}
                 required
               />
             </div>
