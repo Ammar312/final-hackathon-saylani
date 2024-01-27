@@ -8,5 +8,5 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage, limits: { fieldSize: 1000000 * 2 } });
 export default upload.single("studentPic");
